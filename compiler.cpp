@@ -75,7 +75,7 @@ int main(int arg , char **argv)
     cout << "Please input the file path:" << endl;
     cin >> input_file;
     char s[20];
-
+    FILE *fp=fopen("Record","wb");
 
     File::ReadFileToStringOrDie(input_file,&instr);
     Parser parser(instr);
@@ -102,10 +102,10 @@ int main(int arg , char **argv)
         countnumber++;
     }
     for(num=0;num<countnumber;num++)
-        printf("%d\t%s\t%s\n",num,kind.at(num).c_str(),value.at(num).c_str());
+        fprintf(fp,"%d\t%s\t%s\n",num,kind.at(num).c_str(),value.at(num).c_str());
 
 
-
+    fclose(fp);
     return 0;
 }
 
