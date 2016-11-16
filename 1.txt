@@ -1,6 +1,6 @@
-const int id1=+10,id2=-10; 
-char ide3,ide4[5];        
-void fun1(int a){a++;printf(a);}
+const int id1=+10,id2=-10;
+char ide3,ide4[5];
+void fun1(int a){a=a+1;printf(a);}
 int fun2(int a){return(a+10);}
 void fun3(int a)
 {

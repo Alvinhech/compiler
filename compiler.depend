@@ -1,17 +1,5 @@
 # depslib dependency file v1.0
-1478706668 source:e:\codeblocks_13.12\compiler\parser.cpp
-	"Parser.h"
-
-1478696171 e:\codeblocks_13.12\compiler\parser.h
-	<iostream>
-	<string>
-	<fstream>
-	<map>
-	<vector>
-	<ctype.h>
-	<string.h>
-
-1478707426 source:e:\codeblocks_13.12\compiler\compiler.cpp
+1479106613 source:e:\codeblocks_13.12\compiler\compiler.cpp
 	<iostream>
 	<string>
 	<cstring>
@@ -21,5 +9,22 @@
 	<string.h>
 	<fstream>
 	<vector>
+	"Parser.h"
+
+1479209467 e:\codeblocks_13.12\compiler\parser.h
+	<iostream>
+	<string>
+	<fstream>
+	<map>
+	<vector>
+	<ctype.h>
+	<string.h>
+	"Symtable.h"
+
+1479139304 e:\codeblocks_13.12\compiler\symtable.h
+	<vector>
+	<string>
+
+1479269437 source:e:\codeblocks_13.12\compiler\parser.cpp
 	"Parser.h"
 

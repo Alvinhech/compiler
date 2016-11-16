@@ -32,7 +32,17 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
-		<Unit filename="main.cpp" />
+		<Unit filename="1" />
+		<Unit filename="1.txt" />
+		<Unit filename="14231022-何川-文法解读.docx" />
+		<Unit filename="14231022-何川-源代码阅读与分析.docx" />
+		<Unit filename="2" />
+		<Unit filename="Parser.cpp" />
+		<Unit filename="Parser.h" />
+		<Unit filename="Symtable.h" />
+		<Unit filename="_result.txt" />
+		<Unit filename="compiler.cpp" />
+		<Unit filename="扩充C0文法-高.docx" />
 		<Extensions>
 			<code_completion />
 			<envvars />

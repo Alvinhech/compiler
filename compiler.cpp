@@ -63,8 +63,8 @@ namespace File
   }
 
 }
-vector<string> kind;
-vector<string> value;
+extern vector<string> kind;
+extern vector<string> value;
 
 
 int main(int arg , char **argv)
@@ -101,10 +101,11 @@ int main(int arg , char **argv)
         }
         countnumber++;
     }
+
     for(num=0;num<countnumber;num++)
         fprintf(fp,"%d\t%s\t%s\n",num,kind.at(num).c_str(),value.at(num).c_str());
 
-
+    parser.Grammatical_analysis();
     fclose(fp);
     return 0;
 }

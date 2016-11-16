@@ -1,26 +1,30 @@
 #pragma once
-#include<iostream>
+#include <iostream>
 #include <string>
-#include<fstream>
+#include <fstream>
 #include <map>
-#include<vector>
-#include<ctype.h>
+#include <vector>
+#include <ctype.h>
 #include <string.h>
+#include "Symtable.h"
 
 #define MAXLENGTH 256
 
+
 using namespace std;
+
+
 
 class Parser
 {
 public:
 	string Symbol[41]
 	{
-		"IDENT",	//±êÊ¶·û
-		"NUMBER",	//·ÇÁãÊı×Ö
-		"ZERO",	    //Êı×ÖÁã
-		"CHAR",	    //×Ö·û
-		"STRING",	//×Ö·û´®
+		"IDENT",	//æ ‡è¯†ç¬¦
+		"NUMBER",	//éé›¶æ•°å­—
+		"ZERO",	    //æ•°å­—é›¶
+		"CHAR",	    //å­—ç¬¦
+		"STRING",	//å­—ç¬¦ä¸²
 		"INTsym",	//int
 		"CHARsym"   ,//char
 		"CONSTsym",	//const
@@ -55,19 +59,23 @@ public:
 		"SEMICOLON", 	//';'
 		"Single quotes",	    //'''
 		"Double quotes",		//'"'
-		"NULL",	    //ÎŞÀàĞÍ
-		"EOF"	    //ÎÄ¼ş½áÎ²
+		"NULL",	    //æ— ç±»å‹
+		"EOF"	    //æ–‡ä»¶ç»“å°¾
 	};
 
-	map<string, string> Ssym;	//±£Áô×Ö¡¢ÔËËã·û±í
-	string sym;	    //´Ê·¨·ÖÎöµÃµ½µÄµ¥´ÊÀàĞÍ
-	string name;	//ÈôÊÇ±êÊ¶·û¡¢×Ö·û»ò×Ö·û´®£¬name´æ·ÅËûÃÇµÄÃû×Ö»òÖµ
-	int num;	    //ÈôÊÇÊı×Ö£¬num´æ·ÅËûµÄÖµ
-	char ch;	    //ch´æ·Åµ±Ç°¶Áµ½µÄÒ»¸ö×Ö·û
-	int ln;	        //µ±Ç°¶Áµ½µÚ¼¸ĞĞ
+	map<string, string> Ssym;	//ä¿ç•™å­—ã€è¿ç®—ç¬¦è¡¨
+	string sym;	    //è¯æ³•åˆ†æå¾—åˆ°çš„å•è¯ç±»å‹
+	string name;	//è‹¥æ˜¯æ ‡è¯†ç¬¦ã€å­—ç¬¦æˆ–å­—ç¬¦ä¸²ï¼Œnameå­˜æ”¾ä»–ä»¬çš„åå­—æˆ–å€¼
+	int num;	    //è‹¥æ˜¯æ•°å­—ï¼Œnumå­˜æ”¾ä»–çš„å€¼
+	char ch;	    //chå­˜æ”¾å½“å‰è¯»åˆ°çš„ä¸€ä¸ªå­—ç¬¦
+	int ln;	        //å½“å‰è¯»åˆ°ç¬¬å‡ è¡Œ
 	int fc;
 	string filecontent;
-	vector<char> char_stack;	//µ±Ç°¶Áµ½µÄµ¥´Ê
+	vector<char> char_stack;	//å½“å‰è¯»åˆ°çš„å•è¯
+	int cc;
+	struct Symtable symtable;
+	vector<int> table_count;
+	int my_count;
 public:
 	Parser(string filename);
 	~Parser();
@@ -78,4 +86,33 @@ public:
 	string GetSym();
 	int Get_int_Id();
 	string Get_str_Id();
+	void Grammatical_analysis();
+	void const_explain();
+	void var_explain();
+	void var_define();
+	void func_define();
+	void func_noreturn();
+	void func_return();
+	void const_define();
+	void push_address();
+	int number();
+	int parameter_number();
+	void Compound_statement();
+	void Statement_column();
+	void Statement();
+	void Conditional_Statement();   //æ¡ä»¶è¯­å¥
+	void Dowhile_Statement();       //do while è¯­å¥
+	void For_Statement();           //for è¯­å¥
+	void Empty_Statement();         //ç©ºè¯­å¥
+	void Nested_Statement();        //{åµŒå¥—}
+	void Func_call();               //å‡½æ•°è°ƒç”¨
+	void Assignment();              //èµ‹å€¼è¯­å¥
+	void Write_Statement();         //å†™è¯­å¥
+	void Read_Statement();          //è¯»è¯­å¥
+	void Return_Statement();        //è¿”å›è¯­å¥
+	void Expression();              //è¡¨è¾¾å¼
+	void Term();                    //é¡¹
+	void Factor();                  //å› å­
+	void Condition();
+	void main_define();				//mainå‡½æ•°
 };
