@@ -10,7 +10,6 @@
 
 #define MAXLENGTH 256
 
-
 using namespace std;
 
 
@@ -74,7 +73,8 @@ public:
 	vector<char> char_stack;	//当前读到的单词
 	int cc;
 	struct Symtable symtable;
-	vector<int> table_count;
+	vector<int> line_count;     //错误处理输出行号
+	vector<int> table_count;    //符号表
 	int my_count;
 public:
 	Parser(string filename);
@@ -82,7 +82,7 @@ public:
 	void Init();
 	void GetCh();
 	void GetWord();
-	void Error();
+	void Error(string expected_string,int error_number);
 	string GetSym();
 	int Get_int_Id();
 	string Get_str_Id();

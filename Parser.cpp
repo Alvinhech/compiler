@@ -3,9 +3,23 @@
 using namespace std;
 vector<string> kind;
 vector<string> value;
-void Parser::Error() //to do
+int correct_flag=0;
+void Parser::Error(string expected_string,int error_number=0) //to do
 {
-    printf("%d",cc);
+    correct_flag=1;
+    int n=0,i=0;
+    while(i<=cc)
+    {
+        if(line_count.at(n)<i)
+            n++;
+        i++;
+    }
+    if(i==line_count.at(n-1)+1+1)
+        n--;
+    if(error_number==0)
+    {
+        printf("Error: Expected a \"%s\" in line %d.\n",expected_string.c_str(),n+1);
+    }
 }
 
 
@@ -65,7 +79,11 @@ void Parser::GetCh()	//read
 	if(fc<filecontent.length())
     {
         if((ch=filecontent.at(fc++))=='\n')
+        {
+            int temp=value.size()-1;
+            line_count.push_back(temp);
             ln++;
+        }
     }
     else
         ch=EOF;
@@ -139,7 +157,12 @@ void Parser::GetWord()
             GetCh();
         }
         else
-            Error();
+        {
+            Error("=",0);
+            name="!=";
+            sym=Symbol[27];
+        }
+
     }
     else if(ch=='=')
     {
@@ -204,10 +227,18 @@ void Parser::GetWord()
                 char_stack.clear();
             }
             else
-                Error();
+            {
+                Error("\'",0);
+                name = string(char_stack.begin(), char_stack.end());
+                sym = Symbol[3];
+                char_stack.clear();
+            }
+
         }
         else
-            Error();
+        {
+            Error("CHAR",0);
+        }
     }
     else if(ch=='\"')
     {
@@ -227,7 +258,9 @@ void Parser::GetWord()
 			GetCh();
         }
         else
-            Error();
+        {
+            Error("\"",0);
+        }
     }
     else if(ch==EOF)	//读到了文件结尾
 	{
@@ -284,14 +317,18 @@ void Parser::const_explain()
         if(value.at(cc)=="const")
             cc++;
         else
-            Error();
+        {
+            Error("CONSTsym",0);
+        }
         const_define();
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
+        {
+            Error(";",0);
+        }
 
-        wprintf(L"这是常量声明语句\n");
+        //wprintf(L"这是常量声明语句\n");
 
     }while(value.at(cc)=="const");
 }
@@ -304,8 +341,8 @@ void Parser::var_explain()
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
-        wprintf(L"这是变量声明语句\n");
+            Error(";",0);
+        //wprintf(L"这是变量声明语句\n");
     }
 
 }
@@ -322,44 +359,51 @@ void Parser::var_define()
         {
             cc++;
             if(kind.at(cc)=="IDENT")
+            {
                 var_name=value.at(cc);
-            else
-                Error();
-            cc++;
-            if(value.at(cc)=="[")
-            {
                 cc++;
-                int array_num=number();
-                cc++;
-                if(value.at(cc)=="]")
+                if(value.at(cc)=="[")
+                {
                     cc++;
+                    int array_num=number();
+                    cc++;
+                    if(value.at(cc)=="]")
+                        cc++;
+                    else
+                        Error("]",0);
+
+                    symtable.name.push_back(var_name);
+                    symtable.func_value.push_back(3);
+                    symtable.kind.push_back(var_kind);
+                    symtable.feature.push_back(array_num);
+                    symtable.formal_or_actual.push_back(0);
+                    push_address();
+                    my_count++;
+
+                }
                 else
-                    Error();
-
-                symtable.name.push_back(var_name);
-                symtable.func_value.push_back(3);
-                symtable.kind.push_back(var_kind);
-                symtable.feature.push_back(array_num);
-                symtable.formal_or_actual.push_back(0);
-                push_address();
-                my_count++;
-
+                {
+                    symtable.name.push_back(var_name);
+                    symtable.func_value.push_back(1);
+                    symtable.kind.push_back(var_kind);
+                    symtable.feature.push_back(NULL);
+                    symtable.formal_or_actual.push_back(0);
+                    push_address();
+                    my_count++;
+                }
             }
+
             else
             {
-                symtable.name.push_back(var_name);
-                symtable.func_value.push_back(1);
-                symtable.kind.push_back(var_kind);
-                symtable.feature.push_back(NULL);
-                symtable.formal_or_actual.push_back(0);
-                push_address();
-                my_count++;
+                Error("IDENT",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";")
+                    cc++;
             }
+
         }while(value.at(cc)==",");
 
     }
-    else
-        Error();
+
 }
 
 void Parser::func_define()
@@ -386,11 +430,13 @@ void Parser::func_noreturn()
         cc++;
     }
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+    {
+        Error("(",0);
+    }
     int parnum=parameter_number();
     symtable.name.push_back(func_name);
     symtable.func_value.push_back(0);
@@ -418,14 +464,22 @@ void Parser::func_noreturn()
                 cc++;
             }
             else
-                Error();
+            {
+                Error("CHARsym or INTsym",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";"&&value.at(cc)!=")")
+                    cc++;
+            }
             if(kind.at(cc)=="IDENT")
             {
                 formal_name=value.at(cc);
                 cc++;
             }
             else
-                Error();
+            {
+                Error("IDENT",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";"&&value.at(cc)!=")")
+                    cc++;
+            }
             symtable.name.push_back(formal_name);
             symtable.func_value.push_back(1);
             symtable.kind.push_back(formal_kind);
@@ -436,23 +490,29 @@ void Parser::func_noreturn()
         }while(value.at(cc)==",");
     }
     else
-        Error();
+    {
+        Error(")",0);
+    }
     if(value.at(cc)==")")
     {
         cc++;
     }
     else
-        Error();
+    {
+        Error(")",0);
+    }
     if(value.at(cc)=="{")
         cc++;
     else
-        Error();
-    wprintf(L"这是无返回值函数声明语句\n");
+    {
+        Error("{",0);
+    }
+    //wprintf(L"这是无返回值函数声明语句\n");
     Compound_statement();
     if(value.at(cc)=="}")
         cc++;
     else
-        Error();
+        Error("}",0);
 }
 /*＜有返回值函数定义＞  ::=  ＜声明头部＞‘(’＜参数＞‘)’ ‘{’＜复合语句＞‘}’*/
 void Parser::func_return()
@@ -468,11 +528,11 @@ void Parser::func_return()
         cc++;
     }
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(",0);
     int parnum=parameter_number();
     symtable.name.push_back(func_name);
     symtable.func_value.push_back(0);
@@ -500,14 +560,22 @@ void Parser::func_return()
                 cc++;
             }
             else
-                Error();
+            {
+                Error("CHARsym or INTsym",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";"&&value.at(cc)!=")")
+                    cc++;
+            }
             if(kind.at(cc)=="IDENT")
             {
                 formal_name=value.at(cc);
                 cc++;
             }
             else
-                Error();
+            {
+                Error("IDENT",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";"&&value.at(cc)!=")")
+                    cc++;
+            }
             symtable.name.push_back(formal_name);
             symtable.func_value.push_back(1);
             symtable.kind.push_back(formal_kind);
@@ -518,23 +586,23 @@ void Parser::func_return()
         }while(value.at(cc)==",");
     }
     else
-        Error();
+        Error(")",0);
     if(value.at(cc)==")")
     {
         cc++;
     }
     else
-        Error();
+        Error(")",0);
     if(value.at(cc)=="{")
         cc++;
     else
-        Error();
-    wprintf(L"这是有返回值函数声明语句\n");
+        Error("{",0);
+    //wprintf(L"这是有返回值函数声明语句\n");
     Compound_statement();
     if(value.at(cc)=="}")
         cc++;
     else
-        Error();
+        Error("}",0);
 }
 /*＜常量定义＞   ::=   int＜标识符＞＝＜整数＞{,＜标识符＞＝＜整数＞}
                             | char＜标识符＞＝＜字符＞{,＜标识符＞＝＜字符＞}
@@ -555,7 +623,12 @@ void Parser::const_define()
             if(kind.at(cc)=="IDENT")
                 const_name=value.at(cc);
             else
-                Error();
+            {
+                Error("IDENT",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";")
+                    cc++;
+                continue;
+            }
             cc++;
             if(value.at(cc)=="=")
             {
@@ -572,7 +645,7 @@ void Parser::const_define()
                 cc++;
             }
             else
-                Error();
+                Error("=",0);
         }while(value.at(cc)==",");
 
     }
@@ -587,7 +660,12 @@ void Parser::const_define()
             if(kind.at(cc)=="IDENT")
                 const_name=value.at(cc);
             else
-                Error();
+            {
+                Error("IDENT",0);
+                while(value.at(cc)!=","&&value.at(cc)!=";")
+                    cc++;
+                continue;
+            }
             cc++;
             if(value.at(cc)=="=")
             {
@@ -604,12 +682,12 @@ void Parser::const_define()
                 cc++;
             }
             else
-                Error();
+                Error("=",0);
         }while(value.at(cc)==",");
 
     }
     else
-        Error();
+        return;
 }
 /*  ＜整数＞        ::= ［＋｜－］＜无符号整数＞｜０ */
 int Parser::number()
@@ -624,7 +702,10 @@ int Parser::number()
             return n;
         }
         else
-            Error();
+        {
+            Error("NUMBER",0);
+            return 0;
+        }
     }
     else if(value.at(cc)=="-")
     {
@@ -635,7 +716,10 @@ int Parser::number()
             return -n;
         }
         else
-            Error();
+        {
+            Error("NUMBER",0);
+            return 0;
+        }
     }
     else if(kind.at(cc)=="NUMBER")
     {
@@ -647,7 +731,10 @@ int Parser::number()
         return 0;
     }
     else
-        Error();
+    {
+        Error("NUMBER",0);
+        return 0;
+    }
 }
 
 /*＜复合语句＞   ::=  ［＜常量说明＞］［＜变量说明＞］＜语句列＞*/
@@ -699,7 +786,7 @@ void Parser::Statement()
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
+            Error(";",0);
     }
     else if(value.at(cc)=="printf")
     {
@@ -707,7 +794,7 @@ void Parser::Statement()
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
+            Error(";",0);
     }
     else if(value.at(cc)=="scanf")
     {
@@ -715,7 +802,7 @@ void Parser::Statement()
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
+            Error(";",0);
     }
     else if(kind.at(cc)=="IDENT")    //赋值语句或者是函数调用
     {
@@ -724,14 +811,14 @@ void Parser::Statement()
         else if(value.at(cc+1)=="(")
             Func_call();
         else
-            Error();
+            Error("sym error");
         if(value.at(cc)==";")
             cc++;
         else
-            Error();
+            Error(";",0);
     }
     else
-        Error();
+        Error("error",0);
 }
 /*＜条件语句＞  ::=  if ‘(’＜条件＞‘)’＜语句＞［else＜语句＞］*/
 void Parser::Conditional_Statement()   //条件语句
@@ -739,22 +826,22 @@ void Parser::Conditional_Statement()   //条件语句
     if(value.at(cc)=="if")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(",0);
     Condition();
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
-    wprintf(L"这是if语句\n");
+        Error(")",0);
+    //wprintf(L"这是if语句\n");
     Statement();
     if(value.at(cc)=="else")
     {
         cc++;
-        wprintf(L"这是else语句\n");
+        //wprintf(L"这是else语句\n");
         Statement();
     }
 }
@@ -774,22 +861,22 @@ void Parser::Dowhile_Statement()       //do while 循环
     if(value.at(cc)=="do")
         cc++;
     else
-        Error();
-    wprintf(L"这是do_while语句\n");
+        return;
+    //wprintf(L"这是do_while语句\n");
     Statement();
     if(value.at(cc)=="while")
         cc++;
     else
-        Error();
+        Error("WHILEsym",0);
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(",0);
     Condition();
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
+        Error(")",0);
 }
 /*for‘(’＜标识符＞＝＜表达式＞;＜条件＞;＜标识符＞＝＜标识符＞(+|-)＜步长＞‘)’＜语句＞*/
 void Parser::For_Statement()           //for 循环
@@ -797,76 +884,90 @@ void Parser::For_Statement()           //for 循环
     if(value.at(cc)=="for")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(");
     if(kind.at(cc)=="IDENT")
     {
         //to do
         cc++;
     }
     else
-        Error();
+    {
+        Error("IDENT",0);
+        while(value.at(cc)!=";")
+            cc++;
+    }
     if(value.at(cc)=="=")
         cc++;
     else
-        Error();
+        Error("=",0);
     Expression();
     if(value.at(cc)==";")
         cc++;
     else
-        Error();
+        Error(";",0);
     Condition();
     if(value.at(cc)==";")
         cc++;
     else
-        Error();
+        Error(";",0);
     if(kind.at(cc)=="IDENT")
     {
         //to do
         cc++;
     }
     else
-        Error();
+    {
+        Error("IDENT",0);
+        while(value.at(cc)!=")")
+            cc++;
+    }
     if(value.at(cc)=="=")
         cc++;
     else
-        Error();
+        Error("=",0);
     if(kind.at(cc)=="IDENT")
     {
         //to do
         cc++;
     }
     else
-        Error();
+    {
+        Error("IDENT",0);
+        while(value.at(cc)!=")")
+            cc++;
+    }
     if(value.at(cc)=="+"||value.at(cc)=="-")
     {
         //do something
         cc++;
     }
     else
-        Error();
+        Error("+ or -");
     if(kind.at(cc)=="NUMBER")
     {
         //TO DO
         cc++;
     }
     else
-        Error();
+    {
+        Error("NUMBER",0);
+    }
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
-    wprintf(L"这是for语句\n");
+        Error(")");
+    //wprintf(L"这是for语句\n");
     Statement();
 }
 /*＜空＞;*/
 void Parser::Empty_Statement()         //空语句
 {
     ;
-    wprintf(L"这是空语句\n");
+    //wprintf(L"这是空语句\n");
 }
 /*‘{’＜语句列＞‘}’*/
 void Parser::Nested_Statement()        //{嵌套}
@@ -874,12 +975,12 @@ void Parser::Nested_Statement()        //{嵌套}
     if(value.at(cc)=="{")
         cc++;
     else
-        Error();
+        return;
     Statement_column();
     if(value.at(cc)=="}")
         cc++;
     else
-        Error();
+        Error("}");
 }
 /*
 ＜有返回值函数调用语句＞ ::= ＜标识符＞‘(’＜值参数表＞‘)’
@@ -893,12 +994,11 @@ void Parser::Func_call()               //函数调用
         cc++;
     }
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
-    if(kind.at(cc)=="IDENT")
+        Error("(");
     {
         cc--;
         do {
@@ -910,8 +1010,8 @@ void Parser::Func_call()               //函数调用
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
-    wprintf(L"这是函数调用语句\n");
+        Error(")",0);
+    //wprintf(L"这是函数调用语句\n");
 }
 /*＜赋值语句＞   ::=  ＜标识符＞＝＜表达式＞|＜标识符＞‘[’＜表达式＞‘]’=＜表达式＞*/
 void Parser::Assignment()              //赋值语句
@@ -929,14 +1029,14 @@ void Parser::Assignment()              //赋值语句
         if(value.at(cc)=="]")
             cc++;
         else
-            Error();
+            Error("]",0);
         if(value.at(cc)=="=")
             cc++;
         else
-            Error();
+            Error("=",0);
         Expression();
     }
-    wprintf(L"这是赋值语句\n");
+    //wprintf(L"这是赋值语句\n");
 }
 /*＜表达式＞    ::= ［＋｜－］＜项＞{＜加法运算符＞＜项＞}*/
 void Parser::Expression()              //表达式
@@ -972,7 +1072,7 @@ void Parser::Factor()                  //因子
         if(value.at(cc)==")")
             cc++;
         else
-            Error();
+            Error(")");
     }
     else if(kind.at(cc)=="IDENT")
     {
@@ -983,7 +1083,7 @@ void Parser::Factor()                  //因子
             if(value.at(cc)=="]")
                 cc++;
             else
-                Error();
+                Error("]");
         }
         else if(value.at(cc)=="(")
         {
@@ -1008,7 +1108,10 @@ void Parser::Factor()                  //因子
             //to do
         }
         else
-            Error();
+        {
+            Error("NUMBER",0);
+            return;
+        }
     }
     else if(kind.at(cc)=="NUMBER"||kind.at(cc)=="ZERO")
     {
@@ -1016,7 +1119,7 @@ void Parser::Factor()                  //因子
         //to do
     }
     else
-        Error();
+        Error("expressn error",0);
 
 }
 /*＜写语句＞    ::=  printf‘(’＜字符串＞,＜表达式＞‘)’|printf ‘(’＜字符串＞‘)’|printf ‘(’＜表达式＞‘)’*/
@@ -1025,11 +1128,11 @@ void Parser::Write_Statement()         //写语句
     if(value.at(cc)=="printf")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(");
     if(kind.at(cc)=="STRING")
     {
         //to do
@@ -1045,8 +1148,8 @@ void Parser::Write_Statement()         //写语句
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
-    wprintf(L"这是printf写语句\n");
+        Error(")");
+    //wprintf(L"这是printf写语句\n");
 }
 /*＜读语句＞    ::=  scanf ‘(’＜标识符＞{,＜标识符＞}‘)’*/
 void Parser::Read_Statement()          //读语句
@@ -1054,11 +1157,11 @@ void Parser::Read_Statement()          //读语句
     if(value.at(cc)=="scanf")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(");
     cc--;
     do
     {
@@ -1069,13 +1172,17 @@ void Parser::Read_Statement()          //读语句
             cc++;
         }
         else
-            Error();
+        {
+            Error("IDENT",0);
+            while(value.at(cc)!=","&&value.at(cc)!=")")
+                cc++;
+        }
     }while(value.at(cc)==",");
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
-    wprintf(L"这是scanf写语句\n");
+        Error(")",0);
+    //wprintf(L"这是scanf写语句\n");
 }
 /*＜返回语句＞   ::=  return[‘(’＜表达式＞‘)’]*/
 void Parser::Return_Statement()        //返回语句
@@ -1083,7 +1190,7 @@ void Parser::Return_Statement()        //返回语句
     if(value.at(cc)=="return")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
     {
         cc++;
@@ -1091,9 +1198,9 @@ void Parser::Return_Statement()        //返回语句
         if(value.at(cc)==")")
             cc++;
         else
-            Error();
+            Error(")",0);
     }
-    wprintf(L"这是return语句\n");
+    //wprintf(L"这是return语句\n");
 }
 /*＜主函数＞    ::= void main‘(’‘)’ ‘{’＜复合语句＞‘}’*/
 void Parser::main_define()
@@ -1101,29 +1208,29 @@ void Parser::main_define()
     if(value.at(cc)=="void")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="main")
         cc++;
     else
-        Error();
+        return;
     if(value.at(cc)=="(")
         cc++;
     else
-        Error();
+        Error("(",0);
     if(value.at(cc)==")")
         cc++;
     else
-        Error();
+        Error(")",0);
     if(value.at(cc)=="{")
         cc++;
     else
-        Error();
-    wprintf(L"这是main函数声明语句\n");
+        Error("{");
+    //wprintf(L"这是main函数声明语句\n");
     Compound_statement();
     if(value.at(cc)=="}")
         cc++;
     else
-        Error();
+        Error("}");
 }
 
 

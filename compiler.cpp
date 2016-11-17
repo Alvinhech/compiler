@@ -10,7 +10,8 @@
 #include "Parser.h"
 
 using namespace std;
-
+/* "Parser.cpp" */
+extern int correct_flag;
 namespace File
 {
   void ReadFileToStringOrDie(const char* filename, string* data)
@@ -107,6 +108,7 @@ int main(int arg , char **argv)
 
     parser.Grammatical_analysis();
     fclose(fp);
+    //printf("%d",correct_flag);
     return 0;
 }
 
