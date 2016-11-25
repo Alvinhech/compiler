@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1479364187 source:e:\codeblocks_13.12\compiler\compiler.cpp
+1480038572 source:e:\codeblocks_13.12\compiler\compiler.cpp
 	<iostream>
 	<string>
 	<cstring>
@@ -11,7 +11,7 @@
 	<vector>
 	"Parser.h"
 
-1479364137 e:\codeblocks_13.12\compiler\parser.h
+1480038067 e:\codeblocks_13.12\compiler\parser.h
 	<iostream>
 	<string>
 	<fstream>
@@ -20,11 +20,19 @@
 	<ctype.h>
 	<string.h>
 	"Symtable.h"
+	"quaterinstr.h"
 
-1479139304 e:\codeblocks_13.12\compiler\symtable.h
+1480037252 e:\codeblocks_13.12\compiler\symtable.h
 	<vector>
 	<string>
 
-1479365374 source:e:\codeblocks_13.12\compiler\parser.cpp
+1480038422 source:e:\codeblocks_13.12\compiler\parser.cpp
 	"Parser.h"
+
+1480001088 e:\codeblocks_13.12\compiler\quaterinstr.h
+	<string>
+	<vector>
+	<stdlib.h>
+
+1479900759 source:e:\codeblocks_13.12\compiler\quaterinstr.cpp
 

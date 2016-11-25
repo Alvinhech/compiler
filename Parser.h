@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "Symtable.h"
+#include "quaterinstr.h"
 
 #define MAXLENGTH 256
 
@@ -75,7 +76,17 @@ public:
 	struct Symtable symtable;
 	vector<int> line_count;     //错误处理输出行号
 	vector<int> table_count;    //符号表
+	vector<struct function_term*>  func_table;
 	int my_count;
+	int max_quaterinstr;
+	vector<QuaterInstr> quaterline;
+	int quaternum;
+	string label1;	//for (if-else, for , dowhile)
+	string label2;	//for (if-else, for , dowhile)
+	int labelnum;
+	struct function_term* func_term;
+	int address_num;
+	int call_number;
 public:
 	Parser(string filename);
 	~Parser();
@@ -105,14 +116,18 @@ public:
 	void For_Statement();           //for 语句
 	void Empty_Statement();         //空语句
 	void Nested_Statement();        //{嵌套}
-	void Func_call();               //函数调用
+	struct SymbolItem* Func_call();               //函数调用
 	void Assignment();              //赋值语句
 	void Write_Statement();         //写语句
 	void Read_Statement();          //读语句
 	void Return_Statement();        //返回语句
-	void Expression();              //表达式
-	void Term();                    //项
-	void Factor();                  //因子
+	struct SymbolItem* Expression();              //表达式
+	struct SymbolItem* Term();                    //项
+	struct SymbolItem* Factor();                  //因子
 	void Condition();
 	void main_define();				//main函数
+	void print_symtable();
+	void print_all_quater();
+	string new_label(int *n);
+	void print_all_func_table();
 };

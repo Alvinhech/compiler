@@ -39,9 +39,11 @@
 		<Unit filename="2" />
 		<Unit filename="Parser.cpp" />
 		<Unit filename="Parser.h" />
+		<Unit filename="Quaterinstr.cpp" />
 		<Unit filename="Symtable.h" />
 		<Unit filename="_result.txt" />
 		<Unit filename="compiler.cpp" />
+		<Unit filename="quaterinstr.h" />
 		<Unit filename="扩充C0文法-高.docx" />
 		<Extensions>
 			<code_completion />

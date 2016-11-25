@@ -108,6 +108,8 @@ int main(int arg , char **argv)
 
     parser.Grammatical_analysis();
     fclose(fp);
+    parser.print_all_quater();
+    parser.print_all_func_table();
     //printf("%d",correct_flag);
     return 0;
 }
