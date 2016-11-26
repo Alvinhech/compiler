@@ -130,4 +130,20 @@ public:
 	void print_all_quater();
 	string new_label(int *n);
 	void print_all_func_table();
+	struct Symtable return_symtable()
+	{
+	    return symtable;
+	};
+	vector<int> return_table_count()
+	{
+	    return table_count;
+	}
+    vector<struct function_term*>  return_func_table()
+    {
+        return func_table;
+    }
+    vector<QuaterInstr> return_quaterline()
+    {
+        return quaterline;
+    }
 };

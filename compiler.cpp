@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include "Parser.h"
+#include "mips.h"
 
 using namespace std;
 /* "Parser.cpp" */
@@ -111,6 +112,8 @@ int main(int arg , char **argv)
     parser.print_all_quater();
     parser.print_all_func_table();
     //printf("%d",correct_flag);
+    MIPS mips(parser.return_symtable(),parser.return_table_count(),parser.return_func_table(),parser.return_quaterline());
+    mips.Init();
     return 0;
 }
 

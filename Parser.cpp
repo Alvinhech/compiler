@@ -2,6 +2,7 @@
 using namespace std;
 vector<string> kind;
 vector<string> value;
+
 int correct_flag=0;
 void Parser::Error(string expected_string,int error_number=0) //to do
 {
@@ -462,7 +463,7 @@ void Parser::func_noreturn()
     symtable.kind.push_back("void");
     symtable.feature.push_back(parnum);
     symtable.formal_or_actual.push_back(0);
-    push_address();
+    symtable.address.push_back(NULL);
     my_count++;
     if(value.at(cc)==")")
     {
@@ -591,7 +592,7 @@ void Parser::func_return()
     symtable.kind.push_back(func_kind);
     symtable.feature.push_back(parnum);
     symtable.formal_or_actual.push_back(NULL);
-    push_address();
+    symtable.address.push_back(NULL);
     my_count++;
     if(value.at(cc)==")")
     {
@@ -1308,6 +1309,11 @@ struct SymbolItem* Parser::Expression()              //表达式
         {
             cc++;
             temp0=Term();
+            if(initflag==1)
+            {
+                QuaterInstr quater(NEG,temp0,temp0,NULL);
+                quaterline.push_back(quater);
+            }
             count_term++;
             continue;
         }
@@ -1335,11 +1341,6 @@ struct SymbolItem* Parser::Expression()              //表达式
             temp0=temp2;
         }
     }while(value.at(cc)=="+"||value.at(cc)=="-");
-    if(initflag==1)
-    {
-        QuaterInstr quater(NEG,temp0,temp0,NULL);
-        quaterline.push_back(quater);
-    }
     return temp0;
 }
 /*＜项＞     ::= ＜因子＞{＜乘法运算符＞＜因子＞}*/
@@ -1596,7 +1597,7 @@ void Parser::main_define()
     symtable.kind.push_back("void");
     symtable.feature.push_back(0);
     symtable.formal_or_actual.push_back(NULL);
-    push_address();
+    symtable.address.push_back(NULL);
     my_count++;
     if(value.at(cc)=="void")
         cc++;

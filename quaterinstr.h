@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include <stdio.h>
 using namespace std;
 enum Opcode {
 	ADD,
@@ -26,18 +27,17 @@ enum Opcode {
 
 	// des = src
 	ASS,
-	// [des] = src
+	// des[src1] = src2
 	ASSADD,
-	// temp = add of array + offset
+	// des = src1[src2]
 	ARRADD,
-	// des = [src]
-	ARRASS,
 
 
 	JUMP,
 	SETL,
 	READ,
 	WRITE,
+	PRINTCHAR,
 	BEGIN,
 	END,
 
@@ -51,11 +51,6 @@ enum Opcode {
 	PUSH,
 	GET_RETURN,
 
-	//increment +1
-	INC,
-	//decrement -1
-	DEC,
-
 	RETURN
 
 };
@@ -65,7 +60,7 @@ enum Opcode {
 struct SymbolItem
 {
   string name;
-  string kind; //int or char
+  string kind; //int or char or string
   int type;    // 1 represents it's a constant,0 represents variable,2 represents it's a string
   int value;
   string string_value;
@@ -82,7 +77,7 @@ public:
 	SymbolItem* des;
 	SymbolItem* src1;
 	SymbolItem* src2;
-	string opstr[27]=
+	string opstr[26]=
     {
         "ADD",
         "SUB",
@@ -106,18 +101,17 @@ public:
 
         // des = src
         "ASS",
-        // [des] = src
+        // des[src1] = src2
         "ASSADD",
-        // temp = add of array + offset
+        // des = src1[src2]
         "ARRADD",
-        // des = [src]
-        "ARRASS",
 
 
         "JUMP",
         "SETL",
         "READ",
         "WRITE",
+        "PRINTCHAR",
         "BEGIN",
         "END",
 
@@ -130,11 +124,6 @@ public:
         */
         "PUSH",
         "GET_RETURN",
-
-        //increment +1
-        "INC",
-        //decrement -1
-        "DEC",
 
         "RETURN"
     };
