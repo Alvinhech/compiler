@@ -1246,6 +1246,8 @@ struct SymbolItem* Parser::Func_call()               //函数调用
     quaterline.push_back(quater1);
     struct SymbolItem* get_return=new SymbolItem;
     get_return->name=QuaterInstr::new_QuaterInstr(&quaternum);
+    get_return->kind="_call_";
+    get_return->kind+=symbolitem->name;
     get_return->type=0;
     QuaterInstr quater2(GET_RETURN,get_return,NULL,NULL);
     quaterline.push_back(quater2);
@@ -1311,8 +1313,13 @@ struct SymbolItem* Parser::Expression()              //表达式
             temp0=Term();
             if(initflag==1)
             {
-                QuaterInstr quater(NEG,temp0,temp0,NULL);
+                struct SymbolItem* temp=new SymbolItem;
+                temp->name=QuaterInstr::new_QuaterInstr(&quaternum);
+                temp->type=0;
+                temp->kind="";
+                QuaterInstr quater(NEG,temp,temp0,NULL);
                 quaterline.push_back(quater);
+                temp0=temp;
             }
             count_term++;
             continue;
@@ -1328,6 +1335,7 @@ struct SymbolItem* Parser::Expression()              //表达式
             temp2=new SymbolItem;
             temp2->name=QuaterInstr::new_QuaterInstr(&quaternum);
             temp2->type=0;
+            temp2->kind="";
             if(add_or_sub==0)
             {
                 QuaterInstr quater(ADD,temp2,temp0,temp1);
@@ -1371,6 +1379,7 @@ struct SymbolItem* Parser::Term()                    //项
             temp2=new SymbolItem;
             temp2->name=QuaterInstr::new_QuaterInstr(&quaternum);
             temp2->type=0;
+            temp2->kind="";
             if(mul_or_div==0)
             {
                 QuaterInstr quater(MUL,temp2,temp0,temp1);
@@ -1415,6 +1424,9 @@ struct SymbolItem* Parser::Factor()                  //因子
                 Error("]");
             struct SymbolItem* temp=new SymbolItem;
             temp->name=QuaterInstr::new_QuaterInstr(&quaternum);
+            temp->type=0;
+            temp->kind="_array";
+            temp->kind+=symbolitem->name;
             QuaterInstr quater(ARRADD,temp,symbolitem,array);
             quaterline.push_back(quater);
             return temp;
@@ -1571,7 +1583,7 @@ void Parser::Return_Statement()        //返回语句
             cc++;
         else
             Error(")",0);
-        QuaterInstr quater(RETURN,temp,NULL,NULL);
+        QuaterInstr quater(RETURN,NULL,temp,NULL);
         quaterline.push_back(quater);
     }
     //wprintf(L"这是return语句\n");

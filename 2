@@ -1,7 +1,18 @@
-void main()
-{
-    int a,b,d,e,f;
-    a=(a+b)*(e*(d+e)+f);
-    c[6+a]=-a+e/d;
 
+
+int Fib(int n){
+if(n==0)
+return (1);
+if(n==1)
+return (1);
+else
+return (Fib(n-2)+Fib(n-1));
+}
+void main(){
+int t;
+printf("Input the Fibonacci number you want to know:");
+scanf(t);
+t=Fib(t);
+printf("Fib number is:",t);
+return;
 }

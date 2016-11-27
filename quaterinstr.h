@@ -37,7 +37,6 @@ enum Opcode {
 	SETL,
 	READ,
 	WRITE,
-	PRINTCHAR,
 	BEGIN,
 	END,
 
@@ -111,7 +110,6 @@ public:
         "SETL",
         "READ",
         "WRITE",
-        "PRINTCHAR",
         "BEGIN",
         "END",
 

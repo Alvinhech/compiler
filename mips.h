@@ -27,6 +27,8 @@ public:
     int cur_var;
     int cur_formal;
     int cur_space;
+    int stringname_count;
+    int push_sp;
 public:
     MIPS(struct Symtable _symtable,vector<int> _table_count,vector<struct function_term*>  _func_table,vector<QuaterInstr> _quaterline)
     {
@@ -41,4 +43,6 @@ public:
     void generate_src(SymbolItem* temp,int n);
     void generate_des(SymbolItem* temp);
     void print_asm();
+    string new_stringname(int *n);
+    void print_globaldata();
 };
