@@ -110,7 +110,7 @@ int main(int arg , char **argv)
     parser.Grammatical_analysis();
     fclose(fp);
     parser.print_all_quater();
-    parser.print_all_func_table();
+    //parser.print_all_func_table();
     //printf("%d",correct_flag);
     MIPS mips(parser.return_symtable(),parser.return_table_count(),parser.return_func_table(),parser.return_quaterline());
     mips.Init();

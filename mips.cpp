@@ -208,7 +208,13 @@ void MIPS::generate_mips()
         else if(quater.op==BEQ)// ==
         {
             generate_src(src1,1);
-            generate_src(src2,2);
+            if(src2==NULL)
+            {
+                code="li $t2,0";
+                mips_code.push_back(code);
+            }
+            else
+                generate_src(src2,2);
             code="beq $t1,$t2,";
             code+=des->name;
             mips_code.push_back(code);
@@ -216,7 +222,13 @@ void MIPS::generate_mips()
         else if(quater.op==BNE)// !=
         {
             generate_src(src1,1);
-            generate_src(src2,2);
+            if(src2==NULL)
+            {
+                code="li $t2,0";
+                mips_code.push_back(code);
+            }
+            else
+                generate_src(src2,2);
             code="bne $t1,$t2,";
             code+=des->name;
             mips_code.push_back(code);
@@ -379,7 +391,7 @@ void MIPS::generate_mips()
         }
         else if(quater.op==WRITE)
         {
-            if(des->name.at(0)=='_')
+            if(des->name.at(0)=='.')
             {
                 if(des->type==2)//打印字符串
                 {
@@ -389,7 +401,7 @@ void MIPS::generate_mips()
                     stringterm->value=des->string_value.size();
                     stringterm->str_value=des->string_value;
                     globaldata.push_back(stringterm);
-                    code="la $a0,_string";
+                    code="la $a0,.string";
                     itoa(stringname_count, number, 10);
                     code+=number;
                     mips_code.push_back(code);
@@ -635,7 +647,7 @@ void MIPS::generate_src(SymbolItem* temp,int n)
     char number[10];
     if(n==1)
     {
-            if(temp->name.at(0)=='_')
+            if(temp->name.at(0)=='.')
             {
                 if(temp->type==1)
                 {
@@ -690,7 +702,7 @@ void MIPS::generate_src(SymbolItem* temp,int n)
     }
     else if(n==2)
     {
-            if(temp->name.at(0)=='_')
+            if(temp->name.at(0)=='.')
             {
                 if(temp->type==1)
                 {
@@ -750,7 +762,7 @@ void MIPS::generate_des(SymbolItem* temp)
     string code;
     int sp;
     char number[10];
-            if(temp->name.at(0)=='_')
+            if(temp->name.at(0)=='.')
             {
                 int n=0;
                 n=find_quater(temp->name);
@@ -818,7 +830,7 @@ string MIPS::new_stringname(int *n)
 {
     int c=QuaterInstr::number_wei(*n)+2;
     char *s=(char*)malloc(sizeof(char)*c) ;
-    sprintf(s, "_string%d", *n);
+    sprintf(s, ".string%d", *n);
     string str(s);
     return str;
 }

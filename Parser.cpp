@@ -509,14 +509,14 @@ void Parser::func_noreturn()
             address_num++;
             my_count++;
         }while(value.at(cc)==",");
-    }
-    else
-    {
-        Error(")",0);
-    }
-    if(value.at(cc)==")")
-    {
-        cc++;
+        if(value.at(cc)==")")
+        {
+            cc++;
+        }
+        else
+        {
+            Error(")",0);
+        }
     }
     else
     {
@@ -638,12 +638,12 @@ void Parser::func_return()
             address_num++;
             my_count++;
         }while(value.at(cc)==",");
-    }
-    else
-        Error(")",0);
-    if(value.at(cc)==")")
-    {
-        cc++;
+        if(value.at(cc)==")")
+        {
+            cc++;
+        }
+        else
+            Error(")",0);
     }
     else
         Error(")",0);
@@ -983,35 +983,41 @@ void Parser::While_condition()
         if(quaternum>max_quaterinstr)
             max_quaterinstr=quaternum;
         QuaterInstr::clear_QuaterInstr(&quaternum);
+
+        if(branch_number==0)
+        {
+            QuaterInstr quater(BEQ,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==1)
+        {
+            QuaterInstr quater(BLE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==2)
+        {
+            QuaterInstr quater(BGE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==3)
+        {
+            QuaterInstr quater(BGR,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==4)
+        {
+            QuaterInstr quater(BLS,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==5)
+        {
+            QuaterInstr quater(BNE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
     }
-    if(branch_number==0)
+    else
     {
-        QuaterInstr quater(BEQ,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==1)
-    {
-        QuaterInstr quater(BLE,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==2)
-    {
-        QuaterInstr quater(BGE,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==3)
-    {
-        QuaterInstr quater(BGR,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==4)
-    {
-        QuaterInstr quater(BLS,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==5)
-    {
-        QuaterInstr quater(BNE,symbolitem,temp0,temp1);
+        QuaterInstr quater(BNE,symbolitem,temp0,NULL);
         quaterline.push_back(quater);
     }
 
@@ -1047,35 +1053,41 @@ void Parser::Condition()
         if(quaternum>max_quaterinstr)
             max_quaterinstr=quaternum;
         QuaterInstr::clear_QuaterInstr(&quaternum);
+
+        if(branch_number==0)
+        {
+            QuaterInstr quater(BNE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==1)
+        {
+            QuaterInstr quater(BGR,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==2)
+        {
+            QuaterInstr quater(BLS,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==3)
+        {
+            QuaterInstr quater(BLE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==4)
+        {
+            QuaterInstr quater(BGE,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
+        else if(branch_number==5)
+        {
+            QuaterInstr quater(BEQ,symbolitem,temp0,temp1);
+            quaterline.push_back(quater);
+        }
     }
-    if(branch_number==0)
+    else
     {
-        QuaterInstr quater(BNE,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==1)
-    {
-        QuaterInstr quater(BGR,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==2)
-    {
-        QuaterInstr quater(BLS,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==3)
-    {
-        QuaterInstr quater(BLE,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==4)
-    {
-        QuaterInstr quater(BGE,symbolitem,temp0,temp1);
-        quaterline.push_back(quater);
-    }
-    else if(branch_number==5)
-    {
-        QuaterInstr quater(BEQ,symbolitem,temp0,temp1);
+        QuaterInstr quater(BEQ,symbolitem,temp0,NULL);
         quaterline.push_back(quater);
     }
 
@@ -1360,7 +1372,7 @@ struct SymbolItem* Parser::Expression()              //表达式
     struct SymbolItem* temp1;
     struct SymbolItem* temp2;
     int initflag=0;
-    if(value.at(cc)=="+"||value.at(cc)=="-")
+    if(kind.at(cc)=="PLUS"||kind.at(cc)=="MINUS")
     {
         if(value.at(cc)=="-")
             initflag=1;

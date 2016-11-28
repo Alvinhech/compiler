@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1480142460 source:e:\codeblocks_13.12\compiler\compiler.cpp
+1480324138 source:e:\codeblocks_13.12\compiler\compiler.cpp
 	<iostream>
 	<string>
 	<cstring>
@@ -27,10 +27,10 @@
 	<vector>
 	<string>
 
-1480263634 source:e:\codeblocks_13.12\compiler\parser.cpp
+1480324686 source:e:\codeblocks_13.12\compiler\parser.cpp
 	"Parser.h"
 
-1480214110 e:\codeblocks_13.12\compiler\quaterinstr.h
+1480323475 e:\codeblocks_13.12\compiler\quaterinstr.h
 	<string>
 	<vector>
 	<stdlib.h>
@@ -38,7 +38,7 @@
 
 1479900759 source:e:\codeblocks_13.12\compiler\quaterinstr.cpp
 
-1480262538 source:e:\codeblocks_13.12\compiler\mips.cpp
+1480328357 source:e:\codeblocks_13.12\compiler\mips.cpp
 	"mips.h"
 
 1480230237 e:\codeblocks_13.12\compiler\mips.h

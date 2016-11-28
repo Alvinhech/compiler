@@ -136,7 +136,7 @@ public:
     {
         int c=number_wei(*n)+2;
         char *s=(char*)malloc(sizeof(char)*c) ;
-        sprintf(s, "_%d", *n);
+        sprintf(s, ".%d", *n);
         (*n)++;
         string str(s);
         return str;
