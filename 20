@@ -1,0 +1,41 @@
+char str[10];
+int MaxNum(int m,int n)
+{
+	if(m>n)
+		return (m);
+	else
+		return (n);
+}
+
+int Factory(int n)
+{
+	if(n==1)
+		return (1);
+	else
+		return (n*Factory(n-1));
+}
+
+void main()
+{
+	int i,j,count;
+	char s;
+	for(count=0;count<10;count=count+1)
+	{
+		scanf(s);
+		str[count]=s;
+	}
+	printf("the word that you input is:");
+	count=0;
+	do
+	{
+		printf(str[count]);
+		count=count+1;
+	}while(count<10)
+	printf("please input two numbers:\n");
+	scanf(j);
+	scanf(i);
+	printf("the max number is:",MaxNum(i,j));
+	printf("this number's factories is:",Factory(MaxNum(i,j)));
+	printf("you pass the test!\n");
+	return;
+}

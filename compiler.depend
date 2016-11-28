@@ -12,7 +12,7 @@
 	"Parser.h"
 	"mips.h"
 
-1480128368 e:\codeblocks_13.12\compiler\parser.h
+1480297963 e:\codeblocks_13.12\compiler\parser.h
 	<iostream>
 	<string>
 	<fstream>
@@ -27,7 +27,7 @@
 	<vector>
 	<string>
 
-1480216150 source:e:\codeblocks_13.12\compiler\parser.cpp
+1480263634 source:e:\codeblocks_13.12\compiler\parser.cpp
 	"Parser.h"
 
 1480214110 e:\codeblocks_13.12\compiler\quaterinstr.h
@@ -38,7 +38,7 @@
 
 1479900759 source:e:\codeblocks_13.12\compiler\quaterinstr.cpp
 
-1480233997 source:e:\codeblocks_13.12\compiler\mips.cpp
+1480262538 source:e:\codeblocks_13.12\compiler\mips.cpp
 	"mips.h"
 
 1480230237 e:\codeblocks_13.12\compiler\mips.h

@@ -125,6 +125,7 @@ public:
 	struct SymbolItem* Term();                    //项
 	struct SymbolItem* Factor();                  //因子
 	void Condition();
+	void While_condition();
 	void main_define();				//main函数
 	void print_symtable();
 	void print_all_quater();

@@ -234,7 +234,7 @@ void MIPS::generate_mips()
             generate_src(src2,2);
                 int flag=0;
                 int i;
-                for(i=table_count.at(func_count+1);i<=table_count.at(func_count+2);i++)
+                for(i=table_count.at(func_count+1);i<table_count.at(func_count+2);i++)
                 {
                     if(symtable.name.at(i)==des->name)
                     {
@@ -253,6 +253,8 @@ void MIPS::generate_mips()
                     code+=number;
                     mips_code.push_back(code);
                     //加上偏移
+                    code="mul $t1,$t1,4";
+                    mips_code.push_back(code);
                     code="add $t7,$t7,$t1";
                     mips_code.push_back(code);
                     //存
@@ -263,7 +265,9 @@ void MIPS::generate_mips()
                 {
                     code="la $t7,"+des->name;
                     mips_code.push_back(code);
-                    code="div $t7,$t7,$t1";
+                    code="mul $t1,$t1,4";
+                    mips_code.push_back(code);
+                    code="sub $t7,$t7,$t1";
                     mips_code.push_back(code);
                     //存
                     code="sw $t2,($t7)";
@@ -275,7 +279,7 @@ void MIPS::generate_mips()
             generate_src(src2,2);
                 int flag=0;
                 int i;
-                for(i=table_count.at(func_count+1);i<=table_count.at(func_count+2);i++)
+                for(i=table_count.at(func_count+1);i<table_count.at(func_count+2);i++)
                 {
                     if(symtable.name.at(i)==src1->name)
                     {
@@ -294,6 +298,8 @@ void MIPS::generate_mips()
                     code+=number;
                     mips_code.push_back(code);
                     //加上偏移
+                    code="mul $t2,$t2,4";
+                    mips_code.push_back(code);
                     code="add $t7,$t7,$t2";
                     mips_code.push_back(code);
                     //lw
@@ -304,7 +310,9 @@ void MIPS::generate_mips()
                 {
                     code="la $t7,"+src1->name;
                     mips_code.push_back(code);
-                    code="div $t7,$t7,$t2";
+                    code="mul $t2,$t2,4";
+                    mips_code.push_back(code);
+                    code="sub $t7,$t7,$t2";
                     mips_code.push_back(code);
                     //存
                     code="lw $t1,($t7)";
@@ -322,8 +330,47 @@ void MIPS::generate_mips()
         }
         else if(quater.op==READ)
         {
-            code="li $v0,5";
-            mips_code.push_back(code);
+                int flag=0;
+                int i;
+                for(i=table_count.at(func_count+1);i<table_count.at(func_count+2);i++)
+                {
+                    if(symtable.name.at(i)==des->name)
+                    {
+                        flag=1;
+                        break;
+                    }
+                }
+                if(flag==1)
+                {
+                    if(symtable.kind.at(i)=="int")
+                    {
+                        code="li $v0,5";
+                        mips_code.push_back(code);
+                    }
+                    else if(symtable.kind.at(i)=="char")
+                    {
+                        code="li $v0,12";
+                        mips_code.push_back(code);
+                    }
+                }
+                else
+                {
+                    for(i=0;i<table_count.at(1);i++)
+                    {
+                        if(symtable.name.at(i)==des->name)
+                            break;
+                    }
+                    if(symtable.kind.at(i)=="int")
+                    {
+                        code="li $v0,5";
+                        mips_code.push_back(code);
+                    }
+                    else if(symtable.kind.at(i)=="char")
+                    {
+                        code="li $v0,12";
+                        mips_code.push_back(code);
+                    }
+                }
             code="syscall";
             mips_code.push_back(code);
             code="move $t0,$v0";
@@ -811,7 +858,9 @@ void MIPS::print_globaldata()
             else
             {
                 code+=".word  ";
-                code+=(char)globaldata.at(i)->value;
+                int temp=globaldata.at(i)->value;
+                itoa(globaldata.at(i)->value, number, 10);
+                code+=number;
             }
         }
         else

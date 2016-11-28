@@ -954,6 +954,68 @@ void Parser::Conditional_Statement()   //条件语句
         quaterline.push_back(quater1);
     }
 }
+void Parser::While_condition()
+{
+    struct SymbolItem* temp0;
+    struct SymbolItem* temp1;
+
+    struct SymbolItem* symbolitem=new SymbolItem;
+    symbolitem->name=label1;
+
+    int branch_number;
+    temp0=Expression();
+    if(value.at(cc)=="=="||value.at(cc)=="<="||value.at(cc)==">="||value.at(cc)==">"||value.at(cc)=="<"||value.at(cc)=="!=")
+    {
+        if(value.at(cc)=="==")
+            branch_number=0;
+            else if(value.at(cc)=="<=")
+                branch_number=1;
+                else if(value.at(cc)==">=")
+                    branch_number=2;
+                    else if(value.at(cc)==">")
+                        branch_number=3;
+                        else if(value.at(cc)=="<")
+                            branch_number=4;
+                            else if(value.at(cc)=="!=")
+                                branch_number=5;
+        cc++;
+        temp1=Expression();
+        if(quaternum>max_quaterinstr)
+            max_quaterinstr=quaternum;
+        QuaterInstr::clear_QuaterInstr(&quaternum);
+    }
+    if(branch_number==0)
+    {
+        QuaterInstr quater(BEQ,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+    else if(branch_number==1)
+    {
+        QuaterInstr quater(BLE,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+    else if(branch_number==2)
+    {
+        QuaterInstr quater(BGE,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+    else if(branch_number==3)
+    {
+        QuaterInstr quater(BGR,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+    else if(branch_number==4)
+    {
+        QuaterInstr quater(BLS,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+    else if(branch_number==5)
+    {
+        QuaterInstr quater(BNE,symbolitem,temp0,temp1);
+        quaterline.push_back(quater);
+    }
+
+}
 /*＜条件＞    ::=  ＜表达式＞＜关系运算符＞＜表达式＞｜＜表达式＞*/
 void Parser::Condition()
 {
@@ -1029,6 +1091,7 @@ void Parser::Dowhile_Statement()       //do while 循环
     struct SymbolItem* symbolitem;
     //set label1
     symbolitem=new SymbolItem;
+    label1=new_label(&labelnum);
     symbolitem->name=label1;
     QuaterInstr quater1(SETL,symbolitem,NULL,NULL);
     quaterline.push_back(quater1);
@@ -1041,7 +1104,7 @@ void Parser::Dowhile_Statement()       //do while 循环
         cc++;
     else
         Error("(",0);
-    Condition();
+    While_condition();
     if(value.at(cc)==")")
         cc++;
     else

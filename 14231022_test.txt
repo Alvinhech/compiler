@@ -1,0 +1,32 @@
+char str[10];
+int Fib(int n){
+	if(n==0)
+		return (1);
+	if(n==1)
+		return (1);		
+	else
+		return (Fib(n-2)+Fib(n-1));
+}
+
+void main()
+{
+	int t,count;
+	char s;
+	for(count=0;count<10;count=count+1)
+	{
+		scanf(s);
+		str[count]=s;
+	}
+	count=0;
+	do
+	{
+		printf(str[count]);
+		count=count+1;
+	}while(count<10)
+	printf("Input the Fibonacci number you want to know:");
+	scanf(t);
+	t=Fib(t);
+	printf("Fib number is:",t);
+	return;
+	return;
+}
