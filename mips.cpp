@@ -69,20 +69,23 @@ void MIPS::generate_mips()
             cur_space=func_term->var_space+func_term->quater_space+func_term->function_call_space+3;
             //栈指针自减
             code="addiu $sp,$sp,-";
-            itoa(cur_space*4, number, 10);
+            //itoa(cur_space*4, number, 10);
+            sprintf(number,"%d",cur_space*4);
             code+=number;
             mips_code.push_back(code);
             //保存$ra
             code="sw  $ra,";
             sp=cur_space-1;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
             //保存$s7,即保存了栈指针
             code="sw  $s7,";
             sp=cur_space-2;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
@@ -95,13 +98,15 @@ void MIPS::generate_mips()
             {
                 code="lw  $t0,";
                 sp=cur_space+i;
-                itoa(sp*4, number, 10);
+                //itoa(sp*4, number, 10);
+                sprintf(number,"%d",sp*4);
                 code+=number;
                 code+="($sp)";
                 mips_code.push_back(code);
                 code="sw  $t0,";
                 sp=formal_address_begin+i;
-                itoa(sp*4, number, 10);
+                //itoa(sp*4, number, 10);
+                sprintf(number,"%d",sp*4);
                 code+=number;
                 code+="($sp)";
                 mips_code.push_back(code);
@@ -113,20 +118,23 @@ void MIPS::generate_mips()
             //恢复$ra
             code="lw  $ra,";
             sp=cur_space-1;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
             //恢复$s7
             code="lw  $s7,";
             sp=cur_space-2;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
             //栈指针自加
             code="addiu $sp,$sp,";
-            itoa(cur_space*4, number, 10);
+            //itoa(cur_space*4, number, 10);
+            sprintf(number,"%d",cur_space*4);
             code+=number;
             mips_code.push_back(code);
             //跳转回去
@@ -261,7 +269,8 @@ void MIPS::generate_mips()
                     //取到地址
                     code="addi $t7,$s7,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     mips_code.push_back(code);
                     //加上偏移
@@ -279,7 +288,7 @@ void MIPS::generate_mips()
                     mips_code.push_back(code);
                     code="mul $t1,$t1,4";
                     mips_code.push_back(code);
-                    code="sub $t7,$t7,$t1";
+                    code="add $t7,$t7,$t1";
                     mips_code.push_back(code);
                     //存
                     code="sw $t2,($t7)";
@@ -306,7 +315,8 @@ void MIPS::generate_mips()
                     //取到地址
                     code="addi $t7,$s7,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     mips_code.push_back(code);
                     //加上偏移
@@ -324,7 +334,7 @@ void MIPS::generate_mips()
                     mips_code.push_back(code);
                     code="mul $t2,$t2,4";
                     mips_code.push_back(code);
-                    code="sub $t7,$t7,$t2";
+                    code="add $t7,$t7,$t2";
                     mips_code.push_back(code);
                     //存
                     code="lw $t1,($t7)";
@@ -402,7 +412,8 @@ void MIPS::generate_mips()
                     stringterm->str_value=des->string_value;
                     globaldata.push_back(stringterm);
                     code="la $a0,.string";
-                    itoa(stringname_count, number, 10);
+                    //itoa(stringname_count, number, 10);
+                    sprintf(number,"%d",stringname_count);
                     code+=number;
                     mips_code.push_back(code);
                     stringname_count++;
@@ -436,7 +447,8 @@ void MIPS::generate_mips()
                     int quater_base=cur_call+cur_var+cur_formal;
                     code="lw $a0,";
                     sp=n+quater_base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     code+="($s7)";
                     mips_code.push_back(code);
@@ -537,7 +549,8 @@ void MIPS::generate_mips()
                     int base=cur_call;
                     code="lw $a0,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     code+="($s7)";
                     mips_code.push_back(code);
@@ -588,7 +601,8 @@ void MIPS::generate_mips()
         {
             generate_src(des,1);
             code="sw $t1,";
-            itoa(push_sp*4, number, 10);
+            //itoa(push_sp*4, number, 10);
+            sprintf(number,"%d",push_sp*4);
             code+=number;
             code+="($s7)";
             mips_code.push_back(code);
@@ -617,20 +631,23 @@ void MIPS::generate_mips()
             //恢复$ra
             code="lw  $ra,";
             sp=cur_space-1;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
             //恢复$s7
             code="lw  $s7,";
             sp=cur_space-2;
-            itoa(sp*4, number, 10);
+            //itoa(sp*4, number, 10);
+            sprintf(number,"%d",sp*4);
             code+=number;
             code+="($sp)";
             mips_code.push_back(code);
             //栈指针自加
             code="addiu $sp,$sp,";
-            itoa(cur_space*4, number, 10);
+            //itoa(cur_space*4, number, 10);
+            sprintf(number,"%d",cur_space*4);
             code+=number;
             mips_code.push_back(code);
             //跳转回去
@@ -653,7 +670,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                 {
                     int value=temp->value;
                     code="li $t1,";
-                    itoa(value, number, 10);
+                    //itoa(value, number, 10);
+                    sprintf(number,"%d",value);
                     code+=number;
                     mips_code.push_back(code);
                     return;
@@ -663,7 +681,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                 int quater_base=cur_call+cur_var+cur_formal;
                 code="lw $t1,";
                 sp=n+quater_base;
-                itoa(sp*4, number, 10);
+                //itoa(sp*4, number, 10);
+                sprintf(number,"%d",sp*4);
                 code+=number;
                 code+="($s7)";
                 mips_code.push_back(code);
@@ -686,7 +705,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                     int base=cur_call;
                     code="lw $t1,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     code+="($s7)";
                     mips_code.push_back(code);
@@ -708,7 +728,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                 {
                     int value=temp->value;
                     code="li $t2,";
-                    itoa(value, number, 10);
+                    //itoa(value, number, 10);
+                    sprintf(number,"%d",value);
                     code+=number;
                     mips_code.push_back(code);
                     return;
@@ -718,7 +739,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                 int quater_base=cur_call+cur_var+cur_formal;
                 code="lw $t2,";
                 sp=n+quater_base;
-                itoa(sp*4, number, 10);
+                //itoa(sp*4, number, 10);
+                sprintf(number,"%d",sp*4);
                 code+=number;
                 code+="($s7)";
                 mips_code.push_back(code);
@@ -741,7 +763,8 @@ void MIPS::generate_src(SymbolItem* temp,int n)
                     int base=cur_call;
                     code="lw $t2,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     code+="($s7)";
                     mips_code.push_back(code);
@@ -769,7 +792,8 @@ void MIPS::generate_des(SymbolItem* temp)
                 int quater_base=cur_call+cur_var+cur_formal;
                 code="sw $t0,";
                 sp=n+quater_base;
-                itoa(sp*4, number, 10);
+                //itoa(sp*4, number, 10);
+                sprintf(number,"%d",sp*4);
                 code+=number;
                 code+="($s7)";
                 mips_code.push_back(code);
@@ -792,7 +816,8 @@ void MIPS::generate_des(SymbolItem* temp)
                     int base=cur_call;
                     code="sw $t0,";
                     sp=temp_address+base;
-                    itoa(sp*4, number, 10);
+                    //itoa(sp*4, number, 10);
+                    sprintf(number,"%d",sp*4);
                     code+=number;
                     code+="($s7)";
                     mips_code.push_back(code);
@@ -855,7 +880,8 @@ void MIPS::print_globaldata()
         else if(globaldata.at(i)->type==3)
         {
             code+=".space  ";
-            itoa(globaldata.at(i)->value*4, number, 10);
+            //itoa(globaldata.at(i)->value*4, number, 10);
+            sprintf(number,"%d",globaldata.at(i)->value*4);
             code+=number;
 
         }
@@ -871,13 +897,14 @@ void MIPS::print_globaldata()
             {
                 code+=".word  ";
                 int temp=globaldata.at(i)->value;
-                itoa(globaldata.at(i)->value, number, 10);
+                //itoa(globaldata.at(i)->value, number, 10);
+                sprintf(number,"%d",globaldata.at(i)->value);
                 code+=number;
             }
         }
         else
         {
-            code+=".word  ";
+            code+=".word  0";
         }
         mips_code.push_back(code);
     }

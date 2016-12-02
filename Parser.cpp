@@ -20,6 +20,10 @@ void Parser::Error(string expected_string,int error_number=0) //to do
     {
         printf("Error: Expected a \"%s\" in line %d.\n",expected_string.c_str(),n+1);
     }
+    if(error_number==1)
+    {
+        printf("Error: %s in line %d.\n",expected_string.c_str(),n+1);
+    }
 }
 
 
@@ -368,6 +372,38 @@ void Parser::var_define()
             {
                 var_name=value.at(cc);
                 cc++;
+                if(table_count.size()==1)//说明还在全局量定义当中
+                {
+                    int redec;
+                    for(redec=0;redec<my_count;redec++)
+                    {
+                        if(symtable.name.at(redec)==var_name)
+                            break;
+                    }
+                    if(redec<my_count)
+                    {
+                        Error("cannot redeclare a value",1);
+                        while(value.at(cc)!=","&&value.at(cc)!=";")
+                            cc++;
+                        continue;
+                    }
+                }
+                else //函数局部变量
+                {
+                    int redec;
+                    for(redec=table_count.at(table_count.size()-1);redec<my_count;redec++)
+                    {
+                        if(symtable.name.at(redec)==var_name)
+                            break;
+                    }
+                    if(redec<my_count)
+                    {
+                        Error("cannot redeclare a value",1);
+                        while(value.at(cc)!=","&&value.at(cc)!=";")
+                            cc++;
+                        continue;
+                    }
+                }
                 if(value.at(cc)=="[")
                 {
                     cc++;
@@ -439,6 +475,19 @@ void Parser::func_noreturn()
     {
         func_name=value.at(cc);
         cc++;
+        int refunc;
+        for(refunc=1;refunc<table_count.size()-1;refunc++)
+        {
+            if(func_name==symtable.name.at(table_count.at(refunc)))
+                break;
+        }
+        if(refunc<table_count.size()-1)
+        {
+            Error("cannot redeclare a function",1);
+            while(value.at(cc)!="}")
+                cc++;
+            return;
+        }
     }
     else
         return;
@@ -482,6 +531,7 @@ void Parser::func_noreturn()
             {
                 formal_kind=value.at(cc);
                 cc++;
+
             }
             else
             {
@@ -493,6 +543,19 @@ void Parser::func_noreturn()
             {
                 formal_name=value.at(cc);
                 cc++;
+                int redec;
+                for(redec=table_count.at(table_count.size()-1);redec<my_count;redec++)
+                {
+                    if(symtable.name.at(redec)==formal_name)
+                        break;
+                }
+                if(redec<my_count)
+                {
+                    Error("cannot redeclare a formal value",1);
+                    while(value.at(cc)!=","&&value.at(cc)!=")")
+                        cc++;
+                    continue;
+                }
             }
             else
             {
@@ -570,6 +633,19 @@ void Parser::func_return()
     {
         func_name=value.at(cc);
         cc++;
+        int refunc;
+        for(refunc=1;refunc<table_count.size()-1;refunc++)
+        {
+            if(func_name==symtable.name.at(table_count.at(refunc)))
+                break;
+        }
+        if(refunc<table_count.size()-1)
+        {
+            Error("cannot redeclare a function",1);
+            while(value.at(cc)!="}")
+                cc++;
+            return;
+        }
     }
     else
         return;
@@ -622,6 +698,19 @@ void Parser::func_return()
             {
                 formal_name=value.at(cc);
                 cc++;
+                int redec;
+                for(redec=table_count.at(table_count.size()-1);redec<my_count;redec++)
+                {
+                    if(symtable.name.at(redec)==formal_name)
+                        break;
+                }
+                if(redec<my_count)
+                {
+                    Error("cannot redeclare a formal value",1);
+                    while(value.at(cc)!=","&&value.at(cc)!=")")
+                        cc++;
+                    continue;
+                }
             }
             else
             {
@@ -698,7 +787,41 @@ void Parser::const_define()
         {
             cc++;
             if(kind.at(cc)=="IDENT")
+            {
                 const_name=value.at(cc);
+                if(table_count.size()==1)//说明还在全局量定义当中
+                {
+                    int redec;
+                    for(redec=0;redec<my_count;redec++)
+                    {
+                        if(symtable.name.at(redec)==const_name)
+                            break;
+                    }
+                    if(redec<my_count)
+                    {
+                        Error("cannot redeclare a value",1);
+                        while(value.at(cc)!=","&&value.at(cc)!=";")
+                            cc++;
+                        continue;
+                    }
+                }
+                else //函数局部变量
+                {
+                    int redec;
+                    for(redec=table_count.at(table_count.size()-1);redec<my_count;redec++)
+                    {
+                        if(symtable.name.at(redec)==const_name)
+                            break;
+                    }
+                    if(redec<my_count)
+                    {
+                        Error("cannot redeclare a value",1);
+                        while(value.at(cc)!=","&&value.at(cc)!=";")
+                            cc++;
+                        continue;
+                    }
+                }
+            }
             else
             {
                 Error("IDENT",0);
@@ -897,7 +1020,12 @@ void Parser::Statement()
             Error(";",0);
     }
     else
+    {
         Error("error",0);
+        while(value.at(cc)!=";")
+            cc++;
+        cc++;
+    }
     if(quaternum>max_quaterinstr)
         max_quaterinstr=quaternum;
     QuaterInstr::clear_QuaterInstr(&quaternum);
@@ -927,12 +1055,15 @@ void Parser::Conditional_Statement()   //条件语句
         //jump label2
         struct SymbolItem* symbolitem=new SymbolItem;
         label2=new_label(&labelnum);
+        labelstack2.push_back(label2);
         symbolitem->name=label2;
         QuaterInstr quater0(JUMP,symbolitem,NULL,NULL);
         quaterline.push_back(quater0);
 
         //set label1
         symbolitem=new SymbolItem;
+        label1=labelstack1.at(labelstack1.size()-1);
+        labelstack1.pop_back();
         symbolitem->name=label1;
         QuaterInstr quater1(SETL,symbolitem,NULL,NULL);
         quaterline.push_back(quater1);
@@ -941,6 +1072,8 @@ void Parser::Conditional_Statement()   //条件语句
         Statement();
         //set label2
         symbolitem=new SymbolItem;
+        label2=labelstack2.at(labelstack2.size()-1);
+        labelstack2.pop_back();
         symbolitem->name=label2;
         QuaterInstr quater2(SETL,symbolitem,NULL,NULL);
         quaterline.push_back(quater2);
@@ -949,6 +1082,8 @@ void Parser::Conditional_Statement()   //条件语句
         struct SymbolItem* symbolitem;
         //set label1
         symbolitem=new SymbolItem;
+        label1=labelstack1.at(labelstack1.size()-1);
+        labelstack1.pop_back();
         symbolitem->name=label1;
         QuaterInstr quater1(SETL,symbolitem,NULL,NULL);
         quaterline.push_back(quater1);
@@ -960,6 +1095,8 @@ void Parser::While_condition()
     struct SymbolItem* temp1;
 
     struct SymbolItem* symbolitem=new SymbolItem;
+    label1=labelstack1.at(labelstack1.size()-1);
+    labelstack1.pop_back();
     symbolitem->name=label1;
 
     int branch_number;
@@ -1031,6 +1168,7 @@ void Parser::Condition()
     struct SymbolItem* symbolitem=new SymbolItem;
     label1=new_label(&labelnum);
     symbolitem->name=label1;
+    labelstack1.push_back(label1);
 
     int branch_number;
     temp0=Expression();
@@ -1105,6 +1243,7 @@ void Parser::Dowhile_Statement()       //do while 循环
     symbolitem=new SymbolItem;
     label1=new_label(&labelnum);
     symbolitem->name=label1;
+    labelstack1.push_back(label1);
     QuaterInstr quater1(SETL,symbolitem,NULL,NULL);
     quaterline.push_back(quater1);
     Statement();
@@ -1142,6 +1281,30 @@ void Parser::For_Statement()           //for 循环
         temp0->name=value.at(cc);
         temp0->type=0;
         cc++;
+        int find_var;
+        for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+        {
+            if(symtable.name.at(find_var)==temp0->name)
+                break;
+        }
+        if(find_var<my_count)
+            ;
+        else
+        {
+            for(find_var=0;find_var<table_count.at(1);find_var++)
+            {
+                if(symtable.name.at(find_var)==temp0->name)
+                    break;
+            }
+            if(find_var<table_count.at(1))
+                ;
+            else
+            {
+                Error("undeclared identifier",1);
+                while(value.at(cc)!=";")
+                    cc++;
+            }
+        }
     }
     else
     {
@@ -1166,6 +1329,7 @@ void Parser::For_Statement()           //for 循环
     //set label2
     struct SymbolItem* symbolitem=new SymbolItem;
     label2=new_label(&labelnum);
+    labelstack2.push_back(label2);
     symbolitem->name=label2;
     QuaterInstr quater1(SETL,symbolitem,NULL,NULL);
     quaterline.push_back(quater1);
@@ -1181,6 +1345,30 @@ void Parser::For_Statement()           //for 循环
         temp1->name=value.at(cc);
         temp1->type=0;
         cc++;
+        int find_var;
+        for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+        {
+            if(symtable.name.at(find_var)==temp1->name)
+                break;
+        }
+        if(find_var<my_count)
+            ;
+        else
+        {
+            for(find_var=0;find_var<table_count.at(1);find_var++)
+            {
+                if(symtable.name.at(find_var)==temp1->name)
+                    break;
+            }
+            if(find_var<table_count.at(1))
+                ;
+            else
+            {
+                Error("undeclared identifier",1);
+                while(value.at(cc)!="=")
+                    cc++;
+            }
+        }
     }
     else
     {
@@ -1197,6 +1385,30 @@ void Parser::For_Statement()           //for 循环
         temp2->name=value.at(cc);
         temp2->type=0;
         cc++;
+        int find_var;
+        for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+        {
+            if(symtable.name.at(find_var)==temp2->name)
+                break;
+        }
+        if(find_var<my_count)
+            ;
+        else
+        {
+            for(find_var=0;find_var<table_count.at(1);find_var++)
+            {
+                if(symtable.name.at(find_var)==temp2->name)
+                    break;
+            }
+            if(find_var<table_count.at(1))
+                ;
+            else
+            {
+                Error("undeclared identifier",1);
+                while(value.at(cc)=="+"||value.at(cc)=="-")
+                    cc++;
+            }
+        }
     }
     else
     {
@@ -1251,11 +1463,15 @@ void Parser::For_Statement()           //for 循环
     }
     //jump label2
     symbolitem=new SymbolItem;
+    label2=labelstack2.at(labelstack2.size()-1);
+    labelstack2.pop_back();
     symbolitem->name=label2;
     QuaterInstr quater4(JUMP,symbolitem,NULL,NULL);
     quaterline.push_back(quater4);
     //set label1
     symbolitem=new SymbolItem;
+    label1=labelstack1.at(labelstack1.size()-1);
+    labelstack1.pop_back();
     symbolitem->name=label1;
     QuaterInstr quater3(SETL,symbolitem,NULL,NULL);
     quaterline.push_back(quater3);
@@ -1292,6 +1508,19 @@ struct SymbolItem* Parser::Func_call()               //函数调用
     {
         symbolitem->name=value.at(cc);
         cc++;
+        int find_func;
+        for(find_func=1;find_func<table_count.size();find_func++)
+        {
+            if(symtable.name.at(table_count.at(find_func))==symbolitem->name)
+                break;
+        }
+        if(find_func>=table_count.size())
+        {
+            Error("undefined function",1);
+            while(value.at(cc)!=";")
+                cc++;
+            return NULL;
+        }
     }
     else
         return;
@@ -1339,6 +1568,30 @@ void Parser::Assignment()              //赋值语句
     temp0->name=value.at(cc);
     temp0->type=0;
     cc++;
+    int find_var;
+    for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+    {
+        if(symtable.name.at(find_var)==temp0->name)
+            break;
+    }
+    if(find_var<my_count)
+        ;
+    else
+    {
+        for(find_var=0;find_var<table_count.at(1);find_var++)
+        {
+            if(symtable.name.at(find_var)==temp0->name)
+                break;
+        }
+        if(find_var<table_count.at(1))
+            ;
+        else
+        {
+            Error("undeclared identifier",1);
+            while(value.at(cc)!="=")
+                cc++;
+        }
+    }
     if(value.at(cc)=="=")
     {
         cc++;
@@ -1491,6 +1744,29 @@ struct SymbolItem* Parser::Factor()                  //因子
         cc++;
         if(value.at(cc)=="[")
         {
+            int find_var;
+            for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+            {
+                if(symtable.name.at(find_var)==symbolitem->name)
+                    break;
+            }
+            if(find_var<my_count)
+                ;
+            else
+            {
+                for(find_var=0;find_var<table_count.at(1);find_var++)
+                {
+                    if(symtable.name.at(find_var)==symbolitem->name)
+                        break;
+                }
+                if(find_var<table_count.at(1))
+                    ;
+                else
+                {
+                    Error("undeclared identifier",1);
+                    return NULL;
+                }
+            }
             cc++;
             array=Expression();
             if(value.at(cc)=="]")
@@ -1513,7 +1789,31 @@ struct SymbolItem* Parser::Factor()                  //因子
             //to do
         }
         else
-            ;
+        {
+            int find_var;
+            for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+            {
+                if(symtable.name.at(find_var)==symbolitem->name)
+                    break;
+            }
+            if(find_var<my_count)
+                ;
+            else
+            {
+                for(find_var=0;find_var<table_count.at(1);find_var++)
+                {
+                    if(symtable.name.at(find_var)==symbolitem->name)
+                        break;
+                }
+                if(find_var<table_count.at(1))
+                    ;
+                else
+                {
+                    Error("undeclared identifier",1);
+                    return NULL;
+                }
+            }
+        }
     }
     else if(kind.at(cc)=="CHAR")
     {
@@ -1558,8 +1858,12 @@ struct SymbolItem* Parser::Factor()                  //因子
         symbolitem->value=n;
         cc++;
     }
-    else
-        Error("expressn error",0);
+    else{
+        Error("expressn error",0);\
+        while(value.at(cc)!=";")
+            cc++;
+    }
+
     return symbolitem;
 
 }
@@ -1628,6 +1932,30 @@ void Parser::Read_Statement()          //读语句
             QuaterInstr quater(READ,symbolitem,NULL,NULL);
             quaterline.push_back(quater);
             cc++;
+            int find_var;
+            for(find_var=table_count.at(table_count.size()-1);find_var<my_count;find_var++)
+            {
+                if(symtable.name.at(find_var)==symbolitem->name)
+                    break;
+            }
+            if(find_var<my_count)
+                ;
+            else
+            {
+                for(find_var=0;find_var<table_count.at(1);find_var++)
+                {
+                    if(symtable.name.at(find_var)==symbolitem->name)
+                        break;
+                }
+                if(find_var<table_count.at(1))
+                    ;
+                else
+                {
+                    Error("undeclared identifier",1);
+                    while(value.at(cc)!=","||value.at(cc)!=")")
+                        cc++;
+                }
+            }
         }
         else
         {

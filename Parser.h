@@ -81,8 +81,10 @@ public:
 	int max_quaterinstr;
 	vector<QuaterInstr> quaterline;
 	int quaternum;
-	string label1;	//for (if-else, for , dowhile)
-	string label2;	//for (if-else, for , dowhile)
+	vector<string> labelstack1;	//for (if-else, for , dowhile)
+	vector<string> labelstack2;	//for (if-else, for , dowhile)
+	string label1;
+	string label2;
 	int labelnum;
 	struct function_term* func_term;
 	int address_num;
